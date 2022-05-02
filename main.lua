@@ -17,6 +17,7 @@ function love.load()
 	-- files with priority due to dependencies
 	file_loader:load_files({"objects/game_object.lua",
 		"objects/physics/collider.lua",
+		"objects/groups/group.lua",
 		"objects/physics/physics_collider.lua"})
 	file_loader:load_folder("objects")
 	file_loader:load_folder("utils")
@@ -28,43 +29,23 @@ function love.load()
 	level_parser = Level_Parser("assets/levels/levels.ldtk")
 	
 	current_scene = Scene()
-	level = Group(current_scene)
 	
 	timer = Timer()
 	input = Input()
-	
-	p = Player(level, 16, 88, 8, 6)
-	p:add_mask("tiles")
-
-	for i = 0, 23, 1 do
-		local y = 96 - math.floor(i / 8) * 16
-		-- local y = 96
-		local t = Tile(level, i * 8, y, 8, 8, math.floor(math.random() * 4))
-		t:add_layer("tiles")
-		t = Tile(level, i * 8, y + 8, 8, 8, 9 + weighted_random({10, 1, 1, 1}))
-		t:add_layer("tiles")
-		t = Tile(level, i * 8, y + 16, 8, 8, 9 + weighted_random({10, 1, 1, 1}))
-		t:add_layer("tiles")
-		t = Tile(level, i * 8, y + 24, 8, 8, 9 + weighted_random({10, 1, 1, 1}))
-		t:add_layer("tiles")
-		t = Tile(level, i * 8, y + 32, 8, 8, 9 + weighted_random({10, 1, 1, 1}))
-		t:add_layer("tiles")
-		t = Tile(level, i * 8, y + 40, 8, 8, 9 + weighted_random({10, 1, 1, 1}))
-		t:add_layer("tiles")
-	end
 
 	debug = Debug()
 
 	cam = Camera(0, 0)
 
 	love.graphics.setBackgroundColor(0.102, 0.110, 0.173, 1.0)
+
+	level = Level_Group(current_scene)
 end
 
 function love.update(dt)
 	timer:update(dt)
 	current_scene:update(dt)
-
-	-- cam.x = cam.x + dt * 2
+	cam:update(dt)
 
 	input:update()
 end
@@ -74,12 +55,13 @@ function love.draw()
     love.graphics.clear()
 	cam:focus()
 	current_scene:draw()
-	debug:draw()
 
 	cam:unfocus()
 	love.graphics.setCanvas()
 	
 	love.graphics.draw(main_canvas, 0, 0, 0, sx, sy)
+
+	debug:draw()
 end
 
 function love.keypressed(key)

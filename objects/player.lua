@@ -43,10 +43,15 @@ function Player:start()
 	self.squish_time = 0.15
 	self.squish_timer = 0
 	self.squish_treshold = 100
+
+	-- camera control
+	self.h_margins = 16
+	self.v_margins = 8
+	self.h_mod = 0.1
 end
 
 function Player:update_grounded()
-	local gy = self.y + self.h + 1
+	local gy = self.y + self.h + 0.9
 
 	for _, coll in ipairs(self.group:get_layer("tiles")) do
 		if (coll:point_in(self.x + 0.5, gy) or coll:point_in(self.x + self.w - 0.5, gy)) then
@@ -92,6 +97,30 @@ function Player:update_move(dt)
 	end
 	
 	if math.abs(self.dx) == self.max_spd then debug:log("Max Speed!") end
+end
+
+function Player:update_camera()
+	local x_diff = self.x - cam:center_x()
+	local y_diff = self.y - cam:center_y()
+
+	if math.abs(x_diff) > self.h_margins then
+		if x_diff > 0 then
+			cam.x = self.x - self.h_margins - gw / 2
+		else
+			cam.x = self.x + self.h_margins - gw / 2
+		end
+	end
+
+	if math.abs(y_diff) > self.v_margins then
+		if y_diff > 0 then
+			cam.y = self.y - self.v_margins - gh / 2
+		else
+			cam.y = self.y + self.v_margins - gh / 2
+		end
+	end
+
+	-- cam.offset_x = self.dx * self.h_modd
+	-- debug:log(cam.offset_x)
 end
 
 function Player:update_jump(dt)
@@ -151,6 +180,8 @@ function Player:update(dt)
 
 	self.x = self.x + self.dx * dt
 	self.y = self.y + self.dy * dt
+
+	self:update_camera()
 end
 
 function Player:draw()
@@ -175,5 +206,6 @@ function Player:draw()
 	if self.front_facing and math.abs(self.dx) < self.front_facing_speed then
 		spr = spr + 10
 	end
+	
 	sheet:draw_sprite(px, py, spr, self.flipped, false)
 end

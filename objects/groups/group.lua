@@ -4,9 +4,10 @@ function Group:new(scene)
 	self.game_objects = {}
 	self.id = uuid()
 	self.scene = scene
-	self.scene:add_group(self)
 	self.layers = {}
 	self.masks = {}
+	
+	self.scene:add_group(self)
 end
 
 function Group:start()

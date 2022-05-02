@@ -32,6 +32,6 @@ License: CC-BY <br>
 
 ### KarenBook
 _Pixel Font_ <br>
-made by Paul Spades <br>
+Made by Paul Spades <br>
 License: Public Domain <br>
 [Bitfontmaker2 link](http://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=340)
