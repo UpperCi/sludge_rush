@@ -21,13 +21,15 @@ function Collider:center_y()
 end
 
 -- Minkowski sum (?)
-function Collider:minkowski(coll)
+function Collider:minkowski(coll, c_x, c_y)
+	c_x = c_x or self:center_x()
+	c_y = c_y or self:center_y()
 	-- half of length / height
 	local mw = 0.5 * (self.w + coll.w);
 	local mh = 0.5 * (self.h + coll.h);
 	-- center coordinates
-	local mdx = self:center_x() - coll:center_x();
-	local mdy = self:center_y() - coll:center_y();
+	local mdx = c_x - coll:center_x();
+	local mdy = c_y - coll:center_y();
 
 	return mw, mh, mdx, mdy
 end
@@ -38,9 +40,37 @@ function Collider:is_colliding_with(coll)
 	return (math.abs(mdx) <= mw and math.abs(mdy) <= mh)
 end
 
-function Collider:coll_direction(coll)
-	local mw, mh, mdx, mdy = self:minkowski(coll)
+function Collider:coll_direction(coll, start_x, start_y)
+	if not self:is_colliding_with(coll) then return false end
 
+	-- backtrace steps to prevent incorrect collision at high speeds
+	if start_x then
+		local _dx = self.x - start_x
+		local _dy = self.y - start_y
+		local speed = get_length(_dx, _dy)
+		
+		local dir_x = _dx / speed
+		local dir_y = _dy / speed
+
+		local speed_step = 1
+		local steps = math.ceil(speed / speed_step)
+
+		for i = 1, steps do
+			local dist = (i - 1) * speed_step
+			local percentage = dist / speed
+			local current_x = start_x + _dx * dist + (self.w / 2)
+			local current_y = start_y + _dy * dist + (self.h / 2)
+
+			local coll_dir = self:calc_coll_dir(
+				self:minkowski(coll, current_x, current_y))
+			if coll_dir then return coll_dir end
+		end
+	end
+
+	return self:calc_coll_dir(self:minkowski(coll))
+end
+
+function Collider:calc_coll_dir(mw, mh, mdx, mdy)
 	if (math.abs(mdx) <= mw and math.abs(mdy) <= mh) then
 		local diff_x = math.abs(math.abs(mdx) - mw)
 		local diff_y = math.abs(math.abs(mdy) - mh)

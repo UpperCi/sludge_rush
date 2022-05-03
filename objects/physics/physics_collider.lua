@@ -7,6 +7,8 @@ function Physics_Collider:new(group, x, y, w, h, opts)
 	self.h = h
 	self.dx = 0
 	self.dy = 0
+	self.last_x = 0
+	self.lasy_y = 0
 end
 
 function Physics_Collider:collide_with(coll)
@@ -14,11 +16,12 @@ function Physics_Collider:collide_with(coll)
 end
 -- colliding against top when standing still against wall
 function Physics_Collider:physics_collision(coll)
-	local collision = self:coll_direction(coll)
+	local collision = self:coll_direction(coll, self.last_x, self.last_y)
+
 	-- don't lose speed when clipping through corner
-	local corner = 3
 
 	if not collision then return end
+	local corner = 3
 
 	if collision.x == 1 then -- left
 		if collision.d > corner then self.dx = math.max(0, self.dx) end

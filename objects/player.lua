@@ -178,6 +178,9 @@ function Player:update(dt)
 	self:update_move(dt)
 	self:update_jump(dt)
 
+	self.last_x = self.x
+	self.last_y = self.y
+
 	self.x = self.x + self.dx * dt
 	self.y = self.y + self.dy * dt
 
