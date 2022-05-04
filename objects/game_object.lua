@@ -32,10 +32,6 @@ function Game_Object:draw()
 	
 end
 
-function Game_Object:add_mask(mask)
-	self.group:add_to_mask(self, mask)
-end
-
-function Game_Object:add_layer(layer)
-	self.group:add_to_layer(self, layer)
+function Game_Object:delete()
+	self.group:remove_object(self.id)
 end

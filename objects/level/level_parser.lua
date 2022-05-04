@@ -14,6 +14,7 @@ function Level_Parser:parse()
 	for i, lvl in ipairs(levels) do
 		local entities = {}
 		local tiles = {w = 0, h = 0, grid = {}}
+		local time = 0
 		for _, layer in ipairs(lvl['layerInstances']) do
 			local layer_type = layer['__identifier']
 
@@ -33,7 +34,15 @@ function Level_Parser:parse()
 				end
 			end
 		end
-		local level = {entities= entities, tiles= tiles}
+
+		for _, field in ipairs(lvl['fieldInstances']) do
+			local field_type = field['__identifier']
+
+			if field_type == "Time" then
+				time = field['__value']
+			end
+		end
+		local level = {entities= entities, tiles= tiles, time= time}
 		table.insert(self.levels, level)
 	end
 end

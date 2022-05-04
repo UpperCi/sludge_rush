@@ -6,6 +6,8 @@ function Collider:new(group, x, y, w, h, opts)
 	
 	self.w = w
 	self.h = h
+	self.last_x = 0
+	self.lasy_y = 0
 end
 
 function Collider:collide_with(coll)
@@ -41,8 +43,6 @@ function Collider:is_colliding_with(coll)
 end
 
 function Collider:coll_direction(coll, start_x, start_y)
-	if not self:is_colliding_with(coll) then return false end
-
 	-- backtrace steps to prevent incorrect collision at high speeds
 	if start_x then
 		local _dx = self.x - start_x
@@ -52,7 +52,7 @@ function Collider:coll_direction(coll, start_x, start_y)
 		local dir_x = _dx / speed
 		local dir_y = _dy / speed
 
-		local speed_step = 1
+		local speed_step = 0.1
 		local steps = math.ceil(speed / speed_step)
 
 		for i = 1, steps do
@@ -118,4 +118,12 @@ end
 function Collider:point_in(x, y)
 	return (x >= self:left() and x <= self:right() and
 			y >= self:top() and y <= self:bottom())
+end
+
+function Game_Object:add_mask(mask)
+	self.group:add_to_mask(self, mask)
+end
+
+function Game_Object:add_layer(layer)
+	self.group:add_to_layer(self, layer)
 end

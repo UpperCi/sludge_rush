@@ -10,7 +10,7 @@ function love.load()
 	love.graphics.setDefaultFilter("nearest")
 	love.graphics.setLineStyle("rough")
 	main_canvas = love.graphics.newCanvas(gw, gh)
-	resize(6)
+	resize(8)
 
 	-- require dependencies
 	local file_loader = File_Loader()
@@ -18,6 +18,7 @@ function love.load()
 	file_loader:load_files({"objects/game_object.lua",
 		"objects/physics/collider.lua",
 		"objects/groups/group.lua",
+		"objects/level/tile.lua",
 		"objects/physics/physics_collider.lua"})
 	file_loader:load_folder("objects")
 	file_loader:load_folder("utils")

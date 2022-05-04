@@ -6,6 +6,7 @@ function Group:new(scene)
 	self.scene = scene
 	self.layers = {}
 	self.masks = {}
+	self.paused = false
 	
 	self.scene:add_group(self)
 end
@@ -31,6 +32,7 @@ function Group:update_collision()
 end
 
 function Group:update(dt)
+	if self.paused then return end
 	for _, go in ipairs(self.game_objects) do
 		go:update(dt)
 	end
@@ -65,4 +67,13 @@ end
 function Group:get_layer(layer)
 	if self.layers[layer] ~= nil then return self.layers[layer] end
 	return {}
+end
+
+function Group:remove_object(obj_uuid)
+	for i, obj in ipairs(self.game_objects) do
+		if obj.id == obj_uuid then
+			table.remove(self.game_objects, i)
+			return
+		end
+	end
 end

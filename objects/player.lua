@@ -14,8 +14,9 @@ function Player:start()
 	self.grounded = false
 
 	-- jump physics
-	self.base_jump = 95
-	self.jump_speed_increase = 0.1
+	self.base_jump = 105
+	self.jump_speed_increase = 0
+	self.max_dx = 0
 
 	self.down_grav = 700
 	self.up_grav = 450
@@ -43,11 +44,15 @@ function Player:start()
 	self.squish_time = 0.15
 	self.squish_timer = 0
 	self.squish_treshold = 100
+	self.squish_mod = 0
 
 	-- camera control
 	self.h_margins = 16
 	self.v_margins = 8
 	self.h_mod = 0.1
+
+	-- misc
+	self.inventory = {}
 end
 
 function Player:update_grounded()
@@ -63,6 +68,11 @@ function Player:update_grounded()
 		end
 	end
 	self.grounded = false
+end
+
+function die()
+	debug:log("Death!")
+	self.group.paused = true
 end
 
 function Player:update_move(dt)
@@ -190,19 +200,19 @@ end
 function Player:draw()
 	local px = round(self.x)
 	local py = round(self.y) - 2
-	local spr = 20
+	local spr = 0
 	if not self.grounded then
 		if math.abs(self.dy) < self.grav_peak then
-			spr = 23
+			spr = 3
 		elseif self.dy < 0 then
-			spr = 21
+			spr = 1
 		else
-			spr = 22
+			spr = 2
 		end
 	elseif self.squish_timer > 0 then
 		-- (x, y, sx, sy, sw, sh, flip_h, flip_v)
-		local sheet_y = 16
-		if self.front_facing then sheet_y = 24 end
+		local sheet_y = 0
+		if self.front_facing then sheet_y = 8 end
 		sheet:draw_section(px - 4, py, 32, sheet_y, 16, 8, self.flipped, false)
 		return
 	end

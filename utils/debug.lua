@@ -4,12 +4,15 @@ Debug = Class:extend()
 function Debug:new()
 	self.color = {1, 1, 1, 0.8}
 	self.log_text = {}
-	self.jinxed = love.graphics.newFont("assets/typography/JinxedWizards.ttf", 16)
-	self.karen = love.graphics.newFont("assets/typography/KarenBook.ttf", 16)
+	self.log_permanent = {}
 end
 
 function Debug:log(text)
 	table.insert(self.log_text, text)
+end
+
+function Debug:perma_log(text)
+	table.insert(self.log_permanent, text)
 end
 
 function Debug:bool_to_string(v)
@@ -18,8 +21,8 @@ function Debug:bool_to_string(v)
 end
 
 function Debug:draw()
-	local font = self.karen
-	for i, t in ipairs(self.log_text) do
+	local font = font_karen
+	for i, t in ipairs(self.log_text, self.log_permanent) do
 		if type(t) == "boolean" then t = self:bool_to_string(t) end
 		txt = love.graphics.newText(font, t)
 		love.graphics.draw(txt, 2, (i - 1) * 12)
