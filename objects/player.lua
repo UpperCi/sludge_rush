@@ -14,12 +14,11 @@ function Player:start()
 	self.grounded = false
 
 	-- jump physics
-	self.base_jump = 105
+	self.base_jump = 95
 	self.jump_speed_increase = 0
-	self.max_dx = 0
 
 	self.down_grav = 700
-	self.up_grav = 450
+	self.up_grav = 375
 	self.max_grav = 250
 	self.grav_peak = 60
 
@@ -33,7 +32,8 @@ function Player:start()
 
 	self.jump_hold_time = 0.25
 	self.jump_hold_timer = 0
-	self.jump_hold_grav = 40
+	self.jump_hold_grav = 30
+	self.max_dy = 0
 
 	-- sprites
 	self.front_facing = false
@@ -41,15 +41,22 @@ function Player:start()
 	self.flipped = false
 	
 	-- landing sprites
-	self.squish_time = 0.15
+	self.squish_time = 0.07
 	self.squish_timer = 0
-	self.squish_treshold = 100
-	self.squish_mod = 0
+	self.squish_treshold = 60
+	self.squish_mod = 0.0005
 
 	-- camera control
 	self.h_margins = 16
 	self.v_margins = 8
 	self.h_mod = 0.1
+
+	-- particles
+	self.particle_time = 0.08
+	self.particle_timer = 0
+	self.jump_treshold = 240
+	self.jump_divider = 17
+	self.part_col = pal[8]
 
 	-- misc
 	self.inventory = {}
@@ -61,7 +68,21 @@ function Player:update_grounded()
 	for _, coll in ipairs(self.group:get_layer("tiles")) do
 		if (coll:point_in(self.x + 0.5, gy) or coll:point_in(self.x + self.w - 0.5, gy)) then
 			if not self.grounded then
-				self.squish_timer = self.squish_time
+				if self.max_dy > self.squish_treshold then
+					self.squish_timer = self.squish_time + self.squish_mod * self.max_dy
+				end
+				if self.max_dy > self.jump_treshold then
+					local count = math.floor(self.max_dy / self.jump_divider)
+					local str = self.max_dy / 70 - 0.5
+					for i=1, count do
+						local dir_x = math.random() - 0.5 + self.dx / 150
+						local str_y = str + math.random() * 2
+						self.scene:add_particle(Particle(self.part_col, str/3 + math.random() / 2, 
+						self:center_x(), self.y + self.h,
+						dir_x * 30, -str_y * 20, 0, 150))
+					end
+					self.max_dy = 0
+				end
 			end
 			self.grounded = true
 			return
@@ -71,7 +92,7 @@ function Player:update_grounded()
 end
 
 function die()
-	debug:log("Death!")
+	debug:perma_log("Death!")
 	self.group.paused = true
 end
 
@@ -104,6 +125,24 @@ function Player:update_move(dt)
 		end
 		if not self.grounded then acc = acc * self.acc_air_mod end
 		self.dx = move_toward(self.dx, self.max_spd * move_dir, acc * dt)
+	end
+
+	if math.abs(self.dx) > 50 and self.grounded then -- generate particles
+		self.particle_timer = self.particle_timer - dt
+		
+		if self.particle_timer <= 0 then
+			self.particle_timer = self.particle_timer + self.particle_time
+			local abs_str = math.abs(self.dx) * 0.01 + 1 -- 1.5 - 2.5
+			local count = math.floor(math.random() * 2 + abs_str / 2)
+			for i = 1, count do
+				local str = math.random() * 2 + abs_str -- 1.5 - 4.5
+				local x_dir = -sign(self.dx) - 0.3 + math.random() * 0.6
+				
+				local p = Particle(self.part_col, str/8, self:center_x(), self.y + self.h,
+				x_dir * 8 * str, -12 * str, 0, 200)
+				self.scene:add_particle(p)
+			end
+		end
 	end
 	
 	if math.abs(self.dx) == self.max_spd then debug:log("Max Speed!") end
@@ -140,6 +179,12 @@ function Player:update_jump(dt)
 		self.coyote_timer = self.coyote_timer - dt
 	end
 
+	if not self.grounded then
+		if self.dy > self.max_dy then
+			self.max_dy = self.dy
+		end
+	end
+
 	if input:is_just_pressed('space') then
 		self.buffer_timer = self.jump_buffer
 	end
@@ -150,6 +195,7 @@ function Player:update_jump(dt)
 			self.buffer_timer = 0
 			self.coyote_timer = 0
 			self.jump_hold_timer = self.jump_hold_time
+			self.max_dy = 0
 		else
 			self.buffer_timer = self.buffer_timer - dt
 		end
@@ -221,4 +267,21 @@ function Player:draw()
 	end
 	
 	sheet:draw_sprite(px, py, spr, self.flipped, false)
+end
+
+function Player:add_inventory(item)
+	table.insert(self.inventory, item)
+end
+
+function Player:search_inventory(item, autodestroy)
+	autodestroy = autodestroy or true
+	for i, itm in ipairs(self.inventory) do
+		if itm == item then
+			if autodestroy then
+				table.remove(self.inventory, i)
+			end
+			return true
+		end
+	end
+	return false
 end

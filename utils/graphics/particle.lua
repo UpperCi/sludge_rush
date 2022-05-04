@@ -7,7 +7,7 @@ function Particle:new(color, t, x, y, dx, dy, ddx, ddy)
 	self.x = x
 	self.y = y
 	self.dx = dx or 0
-	self.dy = dy or self.dx
+	self.dy = dy or 0
 	self.ddx = ddx or 0
 	self.ddy = ddy or self.ddx
 end
@@ -22,5 +22,5 @@ end
 
 function Particle:draw()
 	set_color(self.color)
-	love.grapihcs.points(self.x - 0.5, self.y - 0.5)
+	love.graphics.points(self.x - 0.5, self.y - 0.5)
 end

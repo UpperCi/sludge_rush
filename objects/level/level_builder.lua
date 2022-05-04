@@ -51,14 +51,14 @@ function Level_Builder:build_tiles()
 				else -- bottom part of stump
 					sprite = 60
 				end
-			else -- leaf
+			else -- foliage
 				tile_class = One_Way_Tile
 				layer = "tiles"
 				if grid[i - 1] ~= 4 then -- left
 					opts['flip_h'] = true
 					x = x + 1
 				end
-				if grid[i - 1] ~= 4 or grid[i + 1] ~= 4 then
+				if grid[i - 1] ~= 4 or grid[i + 1] ~= 4 then -- sides
 					sprite = 63
 					x = x - 0.5
 				else -- center
@@ -91,6 +91,12 @@ function Level_Builder:build_entities()
 		
 		elseif t == "Coin" then
 			local c = Coin(self.group, ex, ey)
+		
+		elseif t == "Key" then
+			local c = Key(self.group, ex, ey)
+		
+		elseif t == "Chest" then
+			local c = Chest(self.group, ex, ey)
 		end
 	end
 end

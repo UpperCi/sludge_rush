@@ -22,7 +22,12 @@ end
 
 function Debug:draw()
 	local font = font_karen
-	for i, t in ipairs(self.log_text, self.log_permanent) do
+	for i, t in ipairs(self.log_text) do
+		if type(t) == "boolean" then t = self:bool_to_string(t) end
+		txt = love.graphics.newText(font, t)
+		love.graphics.draw(txt, 2, (i - 1) * 12)
+	end
+	for i, t in ipairs(self.log_permanent) do
 		if type(t) == "boolean" then t = self:bool_to_string(t) end
 		txt = love.graphics.newText(font, t)
 		love.graphics.draw(txt, 2, (i - 1) * 12)

@@ -24,6 +24,12 @@ function love.load()
 	file_loader:load_folder("utils")
 	file_loader:require()
 
+	for i, c in ipairs(pal) do
+		for j, value in ipairs(pal[i]) do
+			pal[i][j] = value / 255
+		end
+	end
+
 	sheet = Spritesheet("assets/visuals/spritesheet.png", 8)
 
 	-- get level data

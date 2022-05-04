@@ -6,8 +6,6 @@ function Collider:new(group, x, y, w, h, opts)
 	
 	self.w = w
 	self.h = h
-	self.last_x = 0
-	self.lasy_y = 0
 end
 
 function Collider:collide_with(coll)
