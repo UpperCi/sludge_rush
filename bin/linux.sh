@@ -1,1 +1,1 @@
-cat squashfs-root/bin/love sludge_rush.love > linux/sludge_rush
+cat squashfs-root/bin/love src.love > linux/sludge_rush

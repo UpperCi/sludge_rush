@@ -44,7 +44,7 @@ function love.load()
 
 	cam = Camera(0, 0)
 
-	love.graphics.setBackgroundColor(0.102, 0.110, 0.173, 1.0)
+	love.graphics.setBackgroundColor(pal[1])
 
 	level = Level_Group(current_scene)
 end
