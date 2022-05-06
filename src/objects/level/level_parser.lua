@@ -29,6 +29,9 @@ function Level_Parser:parse()
 						entities[entity_type] = {}
 					end
 					local e_data = {x = e['__grid'][1], y = e['__grid'][2]}
+					for ___, v in ipairs(e['fieldInstances']) do
+						e_data[v['__identifier']] = v['__value']
+					end
 
 					table.insert(entities[entity_type], e_data)
 				end

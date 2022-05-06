@@ -30,10 +30,24 @@ function Player:start()
 	self.coyote_time = 0.1 
 	self.coyote_timer = 0
 
+	-- hold jump
 	self.jump_hold_time = 0.25
 	self.jump_hold_timer = 0
 	self.jump_hold_grav = 30
 	self.max_dy = 0
+
+	-- walljump
+	self.sticky = false
+	self.on_wall = false -- left or right based on self.flipped
+	self.on_wall_treshold = -1
+	self.on_wall_max_dy = 40
+	self.walljump_dx = 80
+	self.walljump_dy = 95
+	self.sticky_particle_time = 0.15
+	self.sticky_particle_timer = 0
+	self.wall_coyote_time = 0.15
+	self.wall_coyote_timer = 0
+	self.wall_flipped = false
 
 	-- sprites
 	self.front_facing = false
@@ -111,11 +125,11 @@ end
 function Player:update_move(dt)
 	local move_dir = 0
 	self.front_facing = true
-	if input:is_pressed('d') then
+	if input:action_pressed('move_right') then
 		move_dir = 1
 		self.front_facing = false
 	end
-	if input:is_pressed('a') then
+	if input:action_pressed('move_left') then
 		move_dir = -1
 		self.front_facing = false
 	end
@@ -179,9 +193,6 @@ function Player:update_camera()
 			cam.y = self.y + self.v_margins - gh / 2
 		end
 	end
-
-	-- cam.offset_x = self.dx * self.h_modd
-	-- debug:log(cam.offset_x)
 end
 
 function Player:update_jump(dt)
@@ -197,7 +208,7 @@ function Player:update_jump(dt)
 		end
 	end
 
-	if input:is_just_pressed('space') then
+	if input:action_just_pressed('jump') then
 		self.buffer_timer = self.jump_buffer
 	end
 	if self.buffer_timer > 0 then
@@ -220,7 +231,7 @@ function Player:update_gravity(dt)
 			local grav = self.up_grav
 			if self.dy > self.grav_peak then grav = self.down_grav end
 			if self.jump_hold_timer > 0 then
-				if input:is_pressed('space') then
+				if input:action_pressed('jump') then
 					self.jump_hold_timer = self.jump_hold_timer - dt
 					grav = self.jump_hold_grav
 				else
@@ -231,6 +242,69 @@ function Player:update_gravity(dt)
 			if self.dy > self.max_grav then
 				self.dy = self.max_grav
 			end
+		end
+	end
+end
+
+function Player:update_sticky(dt)
+	self.on_wall = false
+	debug:log(self.wall_flipped)
+	if not self.sticky then return nil end
+
+	if self.sticky_particle_timer > 0 then
+		self.sticky_particle_timer = self.sticky_particle_timer - dt
+	else
+		self.sticky_particle_timer = self.sticky_particle_time
+		local dir_x = self.x - self.last_x
+		local dir_y = self.y - self.last_y
+		local dir_l = get_length(dir_x, dir_y)
+		debug:log(speed)
+		self.scene:add_particle(Particle(pal[5], 1 + math.random() / 2, 
+			self:center_x() + math.random(), self:center_y(),
+			0, dir_y * 20 + 40, 0, 20
+		))
+	end
+
+	if self.grounded then return nil end
+
+	for _, coll in ipairs(self.group:get_layer("tiles")) do
+		if coll.collision_dir ~= nil then goto next_collider end
+		if coll:point_in(self.x - 1, self:center_y())
+		and self.dx < -self.on_wall_treshold then
+			self.on_wall = true
+			self.flipped = true
+			self.wall_flipped = true
+			self.wall_coyote_timer = self.wall_coyote_time
+			goto is_on_wall
+
+		elseif coll:point_in(self.x + self.w + 1, self:center_y())
+		and self.dx > self.on_wall_treshold then
+			self.on_wall = true
+			self.wall_flipped = false
+			self.wall_coyote_timer = self.wall_coyote_time
+			goto is_on_wall
+		end
+		::next_collider::
+	end
+
+	if self.wall_coyote_timer <= 0 then return nil end
+	self.wall_coyote_timer = self.wall_coyote_timer - dt
+
+	::is_on_wall::
+	if self.dy > self.on_wall_max_dy then self.dy = self.on_wall_max_dy end
+	if self.buffer_timer > 0 then
+		local x_dir = -1
+		if self.wall_flipped then x_dir = 1 end
+		self.dx = self.walljump_dx * x_dir
+		self.dy = -self.walljump_dy
+		self.jump_hold_timer = self.jump_hold_time
+		self.max_dy = 0
+		self.sticky = false
+		for i = 1, 20 do 
+			self.scene:add_particle(Particle(pal[5], 0.7 + math.random() / 2, 
+			self:center_x() + math.random() + x_dir * 4, self:center_y(),
+			x_dir * (-0.15 + math.random()) * 80, math.random() * 100 - 125, 0, 100
+			))
 		end
 	end
 end
@@ -246,6 +320,8 @@ function Player:update(dt)
 	self:update_move(dt)
 	self:update_jump(dt)
 
+	self:update_sticky(dt)
+
 	self.last_x = self.x
 	self.last_y = self.y
 
@@ -259,7 +335,13 @@ function Player:draw()
 	local px = round(self.x)
 	local py = round(self.y) - 2
 	local spr = 0
+	set_color(pal[11])
+	if self.sticky then set_color(pal[5	]) end
 	if not self.grounded then
+		if self.on_wall then
+			spr = 6
+			goto draw_sprite
+		end
 		if math.abs(self.dy) < self.grav_peak then
 			spr = 3
 		elseif self.dy < 0 then
@@ -277,10 +359,11 @@ function Player:draw()
 	if self.front_facing and math.abs(self.dx) < self.front_facing_speed then
 		spr = spr + 10
 	end
-	
+	::draw_sprite::
 	sheet:draw_sprite(px, py, spr, self.flipped, false)
 
 	::draw_misc::
+	reset_color()
 	self:draw_ui()
 end
 

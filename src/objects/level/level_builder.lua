@@ -82,7 +82,7 @@ function Level_Builder:build_entities()
 		local ex = e.x * self.size
 		local ey = e.y * self.size
 		if t == 'Player' then
-			local p = Player(self.group, ex, ey + 1, 8, 6)
+			local p = Player(self.group, ex, ey + 2, 8, 6)
 			p:add_mask("tiles")
 			p:add_layer("player")
 			cam.x = p.x - gw / 2
@@ -90,13 +90,16 @@ function Level_Builder:build_entities()
 			self.group.player = p
 		
 		elseif t == "Coin" then
-			local c = Coin(self.group, ex, ey)
+			Coin(self.group, ex, ey)
 		
 		elseif t == "Key" then
-			local c = Key(self.group, ex, ey)
+			Key(self.group, ex, ey)
 		
 		elseif t == "Chest" then
-			local c = Chest(self.group, ex, ey)
+			Chest(self.group, ex, ey)
+		
+		elseif t == "Beehive" then
+			Beehive(self.group, ex, ey, e["flip"])
 		end
 	end
 end

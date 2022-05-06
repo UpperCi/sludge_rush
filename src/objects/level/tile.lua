@@ -4,7 +4,6 @@ Tile = Collider:extend()
 function Tile:new(group, x, y, w, h, spr, opts)
 	self.flip_h = false
 	self.flip_v = false
-	self.collision_dir = {x = 0, y = -1}
 
 	self:init(group, x, y, opts)
 	

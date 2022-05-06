@@ -7,7 +7,16 @@ function Scene:new()
 	self.paused = false
 end
 
+function Scene:start()
+
+end
+
+function Scene:debug_update(dt)
+
+end
+
 function Scene:update(dt)
+	self:debug_update(dt)
 	if self.paused then
 		return
 	end
@@ -33,6 +42,11 @@ function Scene:draw()
 		end
 	end
 	reset_color()
+end
+
+function Scene:reset()
+	self:new()
+	self:start()
 end
 
 function Scene:add_group(g)

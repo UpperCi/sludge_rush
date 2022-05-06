@@ -3,6 +3,7 @@ Input = Class:extend()
 function Input:new()
 	self.just_pressed = {}
 	self.pressed = {}
+	self.bindings = {}
 end
 
 function Input:update()
@@ -26,7 +27,23 @@ function Input:on_key_up(k)
 	self.pressed = new_pressed
 end
 
-function Input:is_pressed(k)
+function Input:action_pressed(a)
+	if self.bindings[a] == nil then return false end
+	for _, k in ipairs(self.bindings[a]) do
+		if self:key_pressed(k) then return true end
+	end
+	return false
+end
+
+function Input:action_just_pressed(a)
+	if self.bindings[a] == nil then return false end
+	for _, k in ipairs(self.bindings[a]) do
+		if self:key_just_pressed(k) then return true end
+	end
+	return false
+end
+
+function Input:key_pressed(k)
 	for i, p in ipairs(self.pressed) do
 		if p == k then
 			return true
@@ -35,11 +52,18 @@ function Input:is_pressed(k)
 	return false	
 end
 
-function Input:is_just_pressed(k)
+function Input:key_just_pressed(k)
 	for i, p in ipairs(self.just_pressed) do
 		if p == k then
 			return true
 		end
 	end
 	return false
+end
+
+function Input:bind(binding, keys)
+	if self.bindings[binding] == nil then self.bindings[binding] = {} end
+	for _, k in ipairs(keys) do
+		table.insert(self.bindings[binding], k)
+	end
 end

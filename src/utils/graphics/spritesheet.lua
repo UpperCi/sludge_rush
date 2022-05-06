@@ -12,15 +12,16 @@ end
 function Spritesheet:draw_section(x, y, sx, sy, sw, sh, flip_h, flip_v)
 	local scale_x = 1
 	local scale_y = 1
+
 	if flip_h == true then
 		scale_x = -1
 		x = x + sw
 	end
-	local scale_y = 1
 	if flip_v == true then
 		scale_y = -1
 		y = y + sh
 	end
+	
 	local q = love.graphics.newQuad(sx, sy, sw, sh, self.img:getDimensions())
 	love.graphics.draw(self.img, q, x, y, 0, scale_x, scale_y)
 end

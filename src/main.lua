@@ -2,6 +2,7 @@ Class = require 'libraries/classic/classic'
 Timer = require 'libraries/hump/timer'
 Json = require 'libraries/json_lua/json'
 require 'file_loader'
+debug_mode = true
 
 function love.load()
 	math.randomseed(os.time())
@@ -19,6 +20,7 @@ function love.load()
 		"objects/physics/collider.lua",
 		"objects/groups/group.lua",
 		"objects/level/tile.lua",
+		"src/objects/scenes/scene.lua",
 		"objects/physics/physics_collider.lua"})
 	file_loader:load_folder("objects")
 	file_loader:load_folder("utils")
@@ -35,10 +37,13 @@ function love.load()
 	-- get level data
 	level_parser = Level_Parser("assets/levels/levels.ldtk")
 	
-	current_scene = Scene()
+	current_scene = Level_Scene()
 	
 	timer = Timer()
 	input = Input()
+	input:bind('move_left', {'a', 'left'})
+	input:bind('move_right', {'d', 'right'})
+	input:bind('jump', {'space', 'z'})
 
 	debug = Debug()
 
@@ -46,10 +51,14 @@ function love.load()
 
 	love.graphics.setBackgroundColor(pal[1])
 
-	level = Level_Group(current_scene)
+	current_scene:start()
 end
 
 function love.update(dt)
+	dt = dt * 1
+	if input:key_just_pressed("r") then
+		current_scene:reset()
+	end
 	timer:update(dt)
 	current_scene:update(dt)
 	cam:update(dt)
