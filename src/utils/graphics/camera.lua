@@ -1,27 +1,8 @@
--- function camera:attach(x,y,w,h, noclip)
-	-- x,y = x or 0, y or 0
-	-- w,h = w or love.graphics.getWidth(), h or love.graphics.getHeight()
--- 
-	-- self._sx,self._sy,self._sw,self._sh = love.graphics.getScissor() -- used to remember previous scissor
-	-- if not noclip then
-		-- love.graphics.setScissor(x,y,w,h)
-	-- end
--- 
-	-- local cx,cy = x+w/2, y+h/2
-	-- love.graphics.push()
-	-- love.graphics.translate(cx, cy)
-	-- love.graphics.scale(self.scale)
-	-- love.graphics.rotate(self.rot)
-	-- love.graphics.translate(-self.x, -self.y)
--- end
-
 Camera = Class:extend()
 
 function Camera:new(x, y, w, h)
 	self.x = x or 0
 	self.y = y or 0
-	self.target_x = 0
-	self.target_y = 0
 	self.limit_left = 0
 	self.limit_right = gw
 	self.limit_top = 0
@@ -32,6 +13,39 @@ function Camera:new(x, y, w, h)
 	self.h = h or love.graphics.getHeight()
 	self.scale = 1
 	self.rot = 0
+
+	self.cinema_targets = {}
+	self.cinema_mode = false
+end
+
+function Camera:add_cinema_target(point)
+	local px = self:clamp_x(point.x * 8 - gw / 2)
+	local py = self:clamp_y(point.y * 8 - gh / 2)
+	table.insert(self.cinema_targets, {x = px, y = py})
+end
+
+function Camera:start_cinematic()
+	self.target_index = 1
+	self.cinema_mode = true
+	self.x = self.cinema_targets[1].x
+	self.y = self.cinema_targets[1].y
+	table.remove(self.cinema_targets, 1)
+	timer:after(0.8, function() self:next_cinematic() end)
+end
+
+function Camera:next_cinematic()
+	if #self.cinema_targets <= 0 then
+		self.cinema_mode = false
+		return
+	end
+
+	local next_target = self.cinema_targets[1]
+	table.remove(self.cinema_targets, 1)
+
+	local next_time = 0.4
+	if #self.cinema_targets <= 0 then next_time = 0 end
+	timer:tween(2, self, {x = next_target.x, y = next_target.y}, 'in-out-quad', 
+	function() timer:after(next_time, function() self:next_cinematic() end) end)
 end
 
 function Camera:center_x()
@@ -42,31 +56,29 @@ function Camera:center_y()
 	return self.y + gh / 2
 end
 
+function Camera:clamp_x(x)
+	if x < self.limit_left then
+		x = self.limit_left
+	end
+	if x > self.limit_right then
+		x = self.limit_right
+	end
+	return x
+end
+
+function Camera:clamp_y(y)
+	if y < self.limit_top then
+		y = self.limit_top
+	end
+	if y > self.limit_bottom then
+		y = self.limit_bottom
+	end
+	return y
+end
+
 function Camera:update(dt)
-	if self.x < self.limit_left then
-		self.x = self.limit_left
-	end
-	if self.target_x < self.limit_left then
-		self.target_x = self.limit_left
-	end
-	if self.x > self.limit_right then
-		self.x = self.limit_right
-	end
-	if self.target_x > self.limit_right then
-		self.target_x = self.limit_right
-	end
-	if self.y < self.limit_top then
-		self.y = self.limit_top
-	end
-	if self.target_y < self.limit_top then
-		self.target_y = self.limit_top
-	end
-	if self.y > self.limit_bottom then
-		self.y = self.limit_bottom
-	end
-	if self.target_y > self.limit_bottom then
-		self.target_y = self.limit_bottom
-	end
+	self.x = self:clamp_x(self.x)
+	self.y = self:clamp_y(self.y)
 end
 
 function Camera:focus()

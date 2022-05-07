@@ -10,6 +10,7 @@ function Particle:new(color, t, x, y, dx, dy, ddx, ddy)
 	self.dy = dy or 0
 	self.ddx = ddx or 0
 	self.ddy = ddy or self.ddx
+	self.on_collision = nil
 end
 
 function Particle:update(dt)
@@ -23,4 +24,8 @@ end
 function Particle:draw()
 	set_color(self.color)
 	love.graphics.points(self.x - 0.5, self.y - 0.5)
+end
+
+function particle_remove(self)
+	self.t = 0
 end

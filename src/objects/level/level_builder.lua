@@ -78,28 +78,37 @@ end
 function Level_Builder:build_entities()
 	local entities = self.data['entities']
 	for t, e_list in pairs(entities) do
-		local e = e_list[1]
-		local ex = e.x * self.size
-		local ey = e.y * self.size
-		if t == 'Player' then
-			local p = Player(self.group, ex, ey + 2, 8, 6)
-			p:add_mask("tiles")
-			p:add_layer("player")
-			cam.x = p.x - gw / 2
-			cam.y = p.y - gh / 2
-			self.group.player = p
-		
-		elseif t == "Coin" then
-			Coin(self.group, ex, ey)
-		
-		elseif t == "Key" then
-			Key(self.group, ex, ey)
-		
-		elseif t == "Chest" then
-			Chest(self.group, ex, ey)
-		
-		elseif t == "Beehive" then
-			Beehive(self.group, ex, ey, e["flip"])
+		for _, e in ipairs(e_list) do
+			local ex = e.x * self.size
+			local ey = e.y * self.size
+			local e = e_list[1]
+			if t == 'Player' then
+				local p = Player(self.group, ex, ey + 3, 8, 6)
+				p:add_mask("tiles")
+				p:add_layer("player")
+				local e = e_list[1]
+				cam.x = p.x - gw / 2
+				cam.y = p.y - gh / 2
+				self.group.player = p
+			
+			elseif t == "Coin" then
+				Coin(self.group, ex, ey)
+			
+			elseif t == "Key" then
+				Key(self.group, ex, ey)
+			
+			elseif t == "Chest" then
+				Chest(self.group, ex, ey)
+				self.group.chests = self.group.chests + 1
+			
+			elseif t == "Beehive" then
+				Beehive(self.group, ex, ey, e["flip"])
+			
+			elseif t == "Camera" then
+				for i, point in ipairs(e["Cinema"]) do
+					cam:add_cinema_target({x = point.cx, y = point.cy})
+				end
+			end
 		end
 	end
 end

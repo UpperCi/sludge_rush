@@ -1,22 +1,37 @@
 Beehive = Collider:extend()
 
 function Beehive:new(group, x, y, flip_h, opts)
-	self:init(group, x, y + 4, opts)
+	self:init(group, x + 1, y + 4, opts)
 	
-	self.w = 8
-	self.h = 80
+	self.w = 6
+	self.h = 200
 	self:add_mask("player")
 	self.name = "beehive"
 	self.particle_timer = 0
 	self.particle_time = 0.18
 	self.flip_h = flip_h or false
+	self:calc_length()
+end
+
+function Beehive:start()
+end
+
+function Beehive:calc_length()
+	::try_new_height::
+	for _, coll in ipairs(self.group:get_layer("tiles")) do
+		if coll.collision_dir == nil and self:is_colliding_with(coll) then
+			self.h = coll.y - self.y - 8
+			goto try_new_height
+		end
+	end
+	self.h = self.h + 4
 end
 
 function Beehive:collide_with(coll)
-		if self:is_colliding_with(coll) then
-			coll.sticky = true
-			debug:log("honey!")
-		end
+	if self:is_colliding_with(coll) then
+		coll.sticky = true
+		debug:log("honey!")
+	end
 end
 
 function Beehive:update(dt)

@@ -15,6 +15,8 @@ end
 function Chest:collide_with(coll)
 	if self:is_colliding_with(coll) then
 		if coll:search_inventory("key") then
+			self.group.chests = self.group.chests - 1
+			self.group:check_chests()
 			self:delete()
 		end
 	end

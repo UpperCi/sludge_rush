@@ -108,7 +108,7 @@ end
 
 function Player:die()
 	debug:perma_log("Death!")
-	self.group.paused = true
+	self.scene:reset()
 end
 
 function Player:draw_ui()
@@ -177,6 +177,9 @@ end
 function Player:update_camera()
 	local x_diff = self.x - cam:center_x()
 	local y_diff = self.y - cam:center_y()
+
+	if math.abs(x_diff) > gw / 2 then self:die() end
+	if y_diff > gh / 2 then self:die() end
 
 	if math.abs(x_diff) > self.h_margins then
 		if x_diff > 0 then
@@ -300,6 +303,7 @@ function Player:update_sticky(dt)
 		self.jump_hold_timer = self.jump_hold_time
 		self.max_dy = 0
 		self.sticky = false
+		self.wall_coyote_timer = 0
 		for i = 1, 20 do 
 			self.scene:add_particle(Particle(pal[5], 0.7 + math.random() / 2, 
 			self:center_x() + math.random() + x_dir * 4, self:center_y(),

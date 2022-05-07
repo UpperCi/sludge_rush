@@ -3,6 +3,7 @@ Timer = require 'libraries/hump/timer'
 Json = require 'libraries/json_lua/json'
 require 'file_loader'
 debug_mode = true
+current_level = "Oasis"
 
 function love.load()
 	math.randomseed(os.time())
@@ -37,13 +38,24 @@ function love.load()
 	-- get level data
 	level_parser = Level_Parser("assets/levels/levels.ldtk")
 	
-	current_scene = Level_Scene()
+	-- current_scene = Level_Scene()
+	current_scene = Menu_Scene()
 	
 	timer = Timer()
 	input = Input()
+
 	input:bind('move_left', {'a', 'left'})
 	input:bind('move_right', {'d', 'right'})
 	input:bind('jump', {'space', 'z'})
+
+	input:bind('ui_left', {'a', 'left'})
+	input:bind('ui_right', {'d', 'right'})
+	input:bind('ui_up', {'w', 'up'})
+	input:bind('ui_down', {'s', 'down'})
+	input:bind('ui_confirm', {'z', 'space', 'enter'})
+	input:bind('ui_quit', {'escape'})
+
+	input:bind('reset', {'r'})
 
 	debug = Debug()
 
@@ -56,7 +68,7 @@ end
 
 function love.update(dt)
 	dt = dt * 1
-	if input:key_just_pressed("r") then
+	if input:action_just_pressed("reset") then
 		current_scene:reset()
 	end
 	timer:update(dt)

@@ -41,9 +41,9 @@ end
 
 function Level_Timer:draw()
 	cam:unfocus()
-	local time = math.max(0, math.ceil(self.time_left))
+	local time = math.max(0, math.ceil(self.time_left + 0.01)) - 1
 	self:draw_bar()
-	txt = love.graphics.newText(self.font, time)
+	local txt = love.graphics.newText(self.font, time)
 	
 	for x = -1, 1 do
 		for y = -1, 1 do
