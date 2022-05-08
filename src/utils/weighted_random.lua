@@ -6,7 +6,7 @@ function weighted_random(weights)
 		total = total + w
 	end
 
-	local randi = love.math.random() * total
+	local randi = math.random() * total
 
 	for i, w in ipairs(weights) do
 		randi = randi - w

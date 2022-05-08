@@ -6,6 +6,8 @@ function Level_Builder:new(group, data)
 	self.data = data
 	self.size = sheet.tile_w
 
+	math.randomseed(data.id)
+
 	self:build_tiles()
 	self:build_entities()
 end
@@ -19,6 +21,7 @@ function Level_Builder:build_tiles()
 	cam.limit_top = 8
 	cam.limit_bottom = h * 8 - gh - 8
 	local grid = tiles['grid']
+
 	for i, t in ipairs(grid) do
 		if t == 0 then goto skip_tile end
 		local x = (i - 1) % w
@@ -32,6 +35,13 @@ function Level_Builder:build_tiles()
 			sprite = 39 + weighted_random({40, 3, 3, 1})
 			if grid[i - w] ~= 1 then
 				sprite = sprite - 10
+				if grid[i - w] == 0 then
+					local grass_deco = weighted_random({13, 1, 1, 1, 1})
+					if grass_deco > 1 then
+						Tile(self.group, x * self.size, (y - 1) * self.size,
+						self.size, self.size, grass_deco + 52, opts)
+					end
+				end
 			elseif grid[i + w] ~= 1 then
 				sprite = sprite - 6
 			end

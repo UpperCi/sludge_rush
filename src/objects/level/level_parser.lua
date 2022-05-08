@@ -45,7 +45,7 @@ function Level_Parser:parse()
 				time = field['__value']
 			end
 		end
-		local level = {entities= entities, tiles= tiles, time= time}
+		local level = {name= lvl['identifier'], id=i, entities= entities, tiles= tiles, time= time}
 		self.levels[lvl['identifier']] = level
 	end
 end
