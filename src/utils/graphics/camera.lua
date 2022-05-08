@@ -16,6 +16,7 @@ function Camera:new(x, y, w, h)
 
 	self.cinema_targets = {}
 	self.cinema_mode = false
+	self.cinema_tween = nil
 end
 
 function Camera:add_cinema_target(point)
@@ -24,13 +25,18 @@ function Camera:add_cinema_target(point)
 	table.insert(self.cinema_targets, {x = px, y = py})
 end
 
+function Camera:cancel_cinematic()
+	self.cinema_mode = false
+	if self.cinema_tween ~= nil then timer:cancel(self.cinema_tween) end
+end	
+
 function Camera:start_cinematic()
 	self.target_index = 1
 	self.cinema_mode = true
 	self.x = self.cinema_targets[1].x
 	self.y = self.cinema_targets[1].y
 	table.remove(self.cinema_targets, 1)
-	timer:after(0.8, function() self:next_cinematic() end)
+	self.cinema_tween = timer:after(0.8, function() self:next_cinematic() end)
 end
 
 function Camera:next_cinematic()
@@ -44,8 +50,8 @@ function Camera:next_cinematic()
 
 	local next_time = 0.4
 	if #self.cinema_targets <= 0 then next_time = 0 end
-	timer:tween(2, self, {x = next_target.x, y = next_target.y}, 'in-out-quad', 
-	function() timer:after(next_time, function() self:next_cinematic() end) end)
+	self.cinema_tween = timer:tween(2, self, {x = next_target.x, y = next_target.y}, 'in-out-quad', 
+	function() self.cinema_tween = timer:after(next_time, function() self:next_cinematic() end) end)
 end
 
 function Camera:center_x()

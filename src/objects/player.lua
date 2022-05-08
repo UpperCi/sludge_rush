@@ -75,6 +75,7 @@ function Player:start()
 	-- misc
 	self.inventory = {}
 	self.name = "player"
+	self.dead = false
 end
 
 function Player:update_grounded()
@@ -92,9 +93,11 @@ function Player:update_grounded()
 					for i=1, count do
 						local dir_x = math.random() - 0.5 + self.dx / 150
 						local str_y = str + math.random() * 2
-						self.scene:add_particle(Particle(self.part_col, str/3 + math.random() / 2, 
+						local p = Particle(self.part_col, str/3 + math.random() / 2, 
 						self:center_x(), self.y + self.h,
-						dir_x * 30, -str_y * 20, 0, 150))
+						dir_x * 30, -str_y * 20, 0, 150)
+						p:add_collision(self.group, particle_remove)
+						self.scene:add_particle(p)
 					end
 					self.max_dy = 0
 				end
@@ -108,7 +111,7 @@ end
 
 function Player:die()
 	debug:perma_log("Death!")
-	self.scene:reset()
+	self.dead = true
 end
 
 function Player:draw_ui()
@@ -166,6 +169,7 @@ function Player:update_move(dt)
 				
 				local p = Particle(self.part_col, str/8, self:center_x(), self.y + self.h,
 				x_dir * 8 * str, -12 * str, 0, 200)
+				p:add_collision(self.group, particle_remove)
 				self.scene:add_particle(p)
 			end
 		end
@@ -262,10 +266,11 @@ function Player:update_sticky(dt)
 		local dir_y = self.y - self.last_y
 		local dir_l = get_length(dir_x, dir_y)
 		debug:log(speed)
-		self.scene:add_particle(Particle(pal[5], 1 + math.random() / 2, 
-			self:center_x() + math.random(), self:center_y(),
-			0, dir_y * 20 + 40, 0, 20
-		))
+		local p = Particle(pal[5], 1 + math.random() / 2, 
+		self:center_x() + math.random(), self:center_y(),
+		0, dir_y * 20 + 40, 0, 20)
+		p:add_collision(self.group, particle_remove)
+		self.scene:add_particle(p)
 	end
 
 	if self.grounded then return nil end
@@ -305,10 +310,11 @@ function Player:update_sticky(dt)
 		self.sticky = false
 		self.wall_coyote_timer = 0
 		for i = 1, 20 do 
-			self.scene:add_particle(Particle(pal[5], 0.7 + math.random() / 2, 
+			local p = Particle(pal[5], 0.7 + math.random() / 2, 
 			self:center_x() + math.random() + x_dir * 4, self:center_y(),
-			x_dir * (-0.15 + math.random()) * 80, math.random() * 100 - 125, 0, 100
-			))
+			x_dir * (-0.15 + math.random()) * 80, math.random() * 100 - 125, 0, 100)
+			p:add_collision(self.group, particle_remove)
+			self.scene:add_particle(p)
 		end
 	end
 end
@@ -368,7 +374,9 @@ function Player:draw()
 
 	::draw_misc::
 	reset_color()
-	self:draw_ui()
+	if not cam.cinema_mode then
+		self:draw_ui()
+	end
 end
 
 function Player:add_inventory(item)

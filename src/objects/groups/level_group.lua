@@ -25,6 +25,9 @@ function Level_Group:update(dt)
 	if input:action_just_pressed("ui_quit") then
 		switch_scene(Menu_Scene())
 	end
+	if self.player.dead then
+		self.scene:reset()
+	end
 end
 
 function Level_Group:time_up()

@@ -10,6 +10,7 @@ function Beehive:new(group, x, y, flip_h, opts)
 	self.particle_timer = 0
 	self.particle_time = 0.18
 	self.flip_h = flip_h or false
+	if self.flip_h then self.x = self.x - 2 end
 	self:calc_length()
 end
 
@@ -40,8 +41,9 @@ function Beehive:update(dt)
 		local part_x = self.x + 3
 		if self.flip_h then part_x = part_x + 2 end
 		self.particle_timer = self.particle_timer + self.particle_time
-		local p = Particle(pal[5], 1, part_x + math.random(), self.y + 5,
+		local p = Particle(pal[5], 8, part_x + math.random(), self.y + 5,
 		math.random() * 3 - 1.5, (math.random() + 3) * 10, 0, 20)
+		p:add_collision(self.group, particle_remove)
 		self.scene:add_particle(p)
 	end	
 end

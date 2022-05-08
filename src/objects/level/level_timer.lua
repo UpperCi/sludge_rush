@@ -40,6 +40,9 @@ function Level_Timer:draw_bar()
 end
 
 function Level_Timer:draw()
+	if cam.cinema_mode then
+		return
+	end
 	cam:unfocus()
 	local time = math.max(0, math.ceil(self.time_left + 0.01)) - 1
 	self:draw_bar()

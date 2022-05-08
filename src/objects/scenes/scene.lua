@@ -37,6 +37,13 @@ function Scene:draw()
 
 	for i, p in ipairs(self.particles) do
 		p:draw()
+		if p.on_collision ~= nil then
+			for _, coll in ipairs(p.group:get_layer(p.mask)) do
+				if coll:point_in(p.x, p.y) then
+					p:on_collision()
+				end	
+			end
+		end
 		if p.t <= 0 then
 			table.remove(self.particles, i)
 		end

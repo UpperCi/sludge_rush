@@ -11,6 +11,8 @@ function Particle:new(color, t, x, y, dx, dy, ddx, ddy)
 	self.ddx = ddx or 0
 	self.ddy = ddy or self.ddx
 	self.on_collision = nil
+	self.mask = nil
+	self.collision_group = nil
 end
 
 function Particle:update(dt)
@@ -28,4 +30,10 @@ end
 
 function particle_remove(self)
 	self.t = 0
+end
+
+function Particle:add_collision(group, after, mask)
+	self.mask = mask or "tiles"
+	self.group = group
+	self.on_collision = after
 end

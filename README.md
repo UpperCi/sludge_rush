@@ -1,7 +1,7 @@
 ## External Resources
 ### hump
 _General LÖVE2D utilities_ <br>
-Copyright (c) 2010-2018 Matthias Richter <br>
+Copyright (c) 2010-2018, Matthias Richter <br>
 License: MIT License <br>
 [GitHub Repository](https://github.com/vrld/hump)
 
@@ -13,13 +13,13 @@ License: MIT License <br>
 
 ### lume
 _Used to generate UUIDs. Repo has more functionalities_ <br>
-Copyright (c) 2020 rxi <br>
+Copyright (c) 2020, rxi <br>
 License: MIT License <br>
 [GitHub Repository](https://github.com/rxi/classic) <br>
 
 ### json.lua
 _Encodes and decodes JSON data_ <br>
-Copyright (c) 2020 rxi <br>
+Copyright (c) 2020, rxi <br>
 License: MIT License <br>
 [GitHub Repository](https://github.com/rxi/json.lua) <br>
 

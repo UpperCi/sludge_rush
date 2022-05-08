@@ -21,7 +21,7 @@ function love.load()
 		"objects/physics/collider.lua",
 		"objects/groups/group.lua",
 		"objects/level/tile.lua",
-		"src/objects/scenes/scene.lua",
+		"objects/scenes/scene.lua",
 		"objects/physics/physics_collider.lua"})
 	file_loader:load_folder("objects")
 	file_loader:load_folder("utils")
@@ -38,7 +38,9 @@ function love.load()
 	-- get level data
 	level_parser = Level_Parser("assets/levels/levels.ldtk")
 	
+	
 	-- current_scene = Level_Scene()
+
 	current_scene = Menu_Scene()
 	
 	timer = Timer()
@@ -70,6 +72,7 @@ function love.update(dt)
 	dt = dt * 1
 	if input:action_just_pressed("reset") then
 		current_scene:reset()
+		cam:cancel_cinematic()
 	end
 	timer:update(dt)
 	current_scene:update(dt)

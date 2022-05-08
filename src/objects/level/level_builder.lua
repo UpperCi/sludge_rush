@@ -102,7 +102,7 @@ function Level_Builder:build_entities()
 				self.group.chests = self.group.chests + 1
 			
 			elseif t == "Beehive" then
-				Beehive(self.group, ex, ey, e["flip"])
+				Beehive(self.group, ex, ey, e.flip)
 			
 			elseif t == "Camera" then
 				for i, point in ipairs(e["Cinema"]) do
