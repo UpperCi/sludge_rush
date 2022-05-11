@@ -1,4 +1,10 @@
 ## External Resources
+### LÖVE
+_Lua Framework for game development_ <br>
+Copyright (c) 2006-2022 LOVE Development Team <br>
+License: zlib <br>
+[Github Repository](https://github.com/love2d/love)
+
 ### hump
 _General LÖVE2D utilities_ <br>
 Copyright (c) 2010-2018, Matthias Richter <br>

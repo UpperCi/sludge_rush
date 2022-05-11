@@ -46,16 +46,12 @@ function Collider:coll_direction(coll, start_x, start_y)
 		local _dx = self.x - start_x
 		local _dy = self.y - start_y
 		local speed = get_length(_dx, _dy)
-		
-		local dir_x = _dx / speed
-		local dir_y = _dy / speed
 
 		local speed_step = 0.1
 		local steps = math.ceil(speed / speed_step)
 
 		for i = 1, steps do
 			local dist = (i - 1) * speed_step
-			local percentage = dist / speed
 			local current_x = start_x + _dx * dist + (self.w / 2)
 			local current_y = start_y + _dy * dist + (self.h / 2)
 

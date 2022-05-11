@@ -16,7 +16,7 @@ function Group:start()
 end
 
 function Group:collide_with_layer(obj, layer)
-	for __, coll in ipairs(self.layers[layer]) do
+	for _, coll in ipairs(self.layers[layer]) do
 		obj:collide_with(coll)
 	end
 end
