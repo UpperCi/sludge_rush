@@ -1,3 +1,6 @@
+# Sludge Rush (WIP)
+Platformer game with time constraints on each level. Made in lua using love2d.
+
 ## External Resources
 ### LÖVE
 _Lua Framework for game development_ <br>
