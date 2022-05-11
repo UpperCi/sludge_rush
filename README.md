@@ -38,9 +38,12 @@ Copyright (c) Christina Antoinette Neofotistou <br>
 License: CC-BY <br>
 [Bitfontmaker2 link](http://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=1362)
 
-
 ### KarenBook
 _Pixel Font_ <br>
 Made by Paul Spades <br>
-License: Public Domain <br>
 [Bitfontmaker2 link](http://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=340)
+
+### Sweetie-16
+_Color palette_ <br>
+Made by GrafxKid <br>
+[Lospec link](https://lospec.com/palette-list/sweetie-16)
