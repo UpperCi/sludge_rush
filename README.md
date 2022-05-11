@@ -1,4 +1,4 @@
-# Sludge Rush (WIP)
+# Sludge Rush
 Platformer game with time constraints on each level. Made in lua using love2d.
 
 ## External Resources
